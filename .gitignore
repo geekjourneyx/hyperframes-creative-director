@@ -1,0 +1,11 @@
+# Local Superpowers design and implementation documents. Never force-add.
+/docs/superpowers/
+
+# Local production workspaces and evaluation outputs.
+/workspaces/
+/eval-runs/
+node_modules/
+.env
+.env.*
+!.env.example
+.DS_Store
