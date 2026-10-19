@@ -1,0 +1,7 @@
+[
+  {"id":"typography","brief":"Create a 30-second typographic film about attention. Make one idea memorable.","assets":"Original copy only","boundary":"No music; long titles must remain readable."},
+  {"id":"product","brief":"Create a 30-second launch film using a supplied working product and verified feature list.","assets":"Captured real UI, supplied logo and feature evidence","boundary":"Do not invent product capabilities or unreadable UI."},
+  {"id":"webgl","brief":"Create a 30-second film that makes an abstract network feel understandable through procedural space.","assets":"Original generated geometry","boundary":"Include an intentional dark pause; it must be reviewed in context."},
+  {"id":"montage","brief":"Create a 30-second destination film using the supplied footage and licensed sound.","assets":"Supplied footage, one track with unresolved permission","boundary":"Resolve or replace the unresolved asset; respect the stated budget."},
+  {"id":"abstract","brief":"Create a 30-second film about trust that communicates without a prescribed visual style.","assets":"Original material or documented licensed assets","boundary":"The user supplies a long Chinese headline and requests Chinese output; honor that language override."}
+]

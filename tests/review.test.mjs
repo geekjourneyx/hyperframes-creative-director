@@ -1,0 +1,18 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {decideDelivery} from '../skills/hyperframes-creative-director/scripts/review.mjs';
+const evidence={schemaVersion:1,videoSha256:'a'.repeat(64),hasAudio:true,artifacts:['frame.png','clip.mp4'],checks:['decode','video_track','dimensions','frame_rate','duration','audio_presence'].map(id=>({id,status:'pass',reason:'tested',evidence:['film.mp4']}))};
+const review={schemaVersion:1,videoSha256:evidence.videoSha256,briefDigest:'b'.repeat(64),reviewerMode:'independent',playback:'verified',audio:'verified',findings:[],limitations:[]};
+const decide=(e=evidence,r=review,a=true)=>decideDelivery({approvalValid:a,evidence:e,review:r});
+test('only complete evidence is ready, stale approval or old video is blocked',()=>{assert.equal(decide().status,'ready');assert.equal(decide(evidence,review,false).status,'changes_required');assert.equal(decide(evidence,{...review,videoSha256:'c'.repeat(64)}).status,'changes_required');assert.equal(decide({...evidence,checks:[]}).status,'partial');});
+test('playback and audio observation cannot be replaced by screenshots',()=>{assert.equal(decide(evidence,{...review,playback:'unverified'}).status,'partial');assert.equal(decide(evidence,{...review,audio:'not-applicable'}).status,'changes_required');assert.equal(decide({...evidence,artifacts:[]}).status,'partial');});
+test('technical failure and open major issues block; minor is retained',()=>{const f={id:'copy',category:'content',severity:'major',expected:'True claim',observed:'Invented claim',evidence:['frame.png'],resolution:'open'};assert.equal(decide(evidence,{...review,findings:[f]}).status,'changes_required');assert.equal(decide(evidence,{...review,findings:[{...f,category:'visual',severity:'minor'}]}).status,'ready');assert.equal(decide(evidence,{...review,findings:[{...f,resolution:'intentional',rationale:'art'}]}).status,'changes_required');assert.equal(decide({...evidence,checks:[...evidence.checks.filter(c=>c.id!=='decode'),{id:'decode',status:'fail',evidence:[]}]}).status,'changes_required');});
+test('context can resolve a dark interval with evidence and rationale',()=>{const e={...evidence,checks:[...evidence.checks,{id:'black_0',status:'candidate',evidence:['film.mp4']}]};assert.equal(decide(e).status,'changes_required');const f={id:'black_0',category:'visual',severity:'minor',expected:'Hold',observed:'Black hold',evidence:['clip.mp4'],resolution:'intentional',rationale:'Approved dramatic pause'};assert.equal(decide(e,{...review,findings:[f]}).status,'ready');assert.equal(decide(e,{...review,findings:[{...f,rationale:''}]}).status,'changes_required');});
+test('self review is explicit, malformed reports fail closed',()=>{assert.equal(decide(evidence,{...review,reviewerMode:'self-review'}).reviewerMode,'self-review');for(const value of [null,{}, {...review,findings:[{}]}])assert.notEqual(decide(evidence,value).status,'ready');});
+test('minor factual and technical errors remain blocking, even without a failed automated check',()=>{
+ for(const category of ['content','technical']){const f={id:'error',category,severity:'minor',expected:'Correct output',observed:'Wrong value',evidence:['frame.png'],resolution:'open'};assert.equal(decide(evidence,{...review,findings:[f]}).status,'changes_required');}
+});
+test('a candidate still detected in current evidence cannot be cleared as fixed',()=>{
+ const e={...evidence,checks:[...evidence.checks,{id:'black_0',status:'candidate',evidence:['film.mp4']}]};
+ const f={id:'black_0',category:'visual',severity:'minor',expected:'Visible picture',observed:'Black',evidence:['clip.mp4'],resolution:'fixed'};
+ assert.equal(decide(e,{...review,findings:[f]}).status,'changes_required');
+});
