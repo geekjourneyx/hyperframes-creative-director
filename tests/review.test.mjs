@@ -16,3 +16,6 @@ test('a candidate still detected in current evidence cannot be cleared as fixed'
  const f={id:'black_0',category:'visual',severity:'minor',expected:'Visible picture',observed:'Black',evidence:['clip.mp4'],resolution:'fixed'};
  assert.equal(decide(e,{...review,findings:[f]}).status,'changes_required');
 });
+test('malformed findings return a blocked decision instead of crashing',()=>{
+ for(const findings of [{},'unchecked',42])assert.equal(decide(evidence,{...review,findings}).status,'changes_required');
+});

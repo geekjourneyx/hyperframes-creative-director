@@ -15,3 +15,9 @@ test('evidence hash-directory and image symlinks cannot overwrite outside files'
   await assert.rejects(inspectVideo({videoPath:video,expectation:expected,outputDir}),/escape|symlink/i);assert.equal(await readFile(victim,'utf8'),'preserve');
  }
 });
+test('silence intervals stop when sound resumes and retain unfinished tail silence',async()=>{
+ const {root,video}=await fixture();
+ const sound=join(root,'pauses.mp4');const r=await run('ffmpeg',['-v','error','-f','lavfi','-i','color=red:s=64x64:r=10:d=2','-f','lavfi','-i','aevalsrc=if(between(t\\,0.5\\,1.5)\\,0.2*sin(2*PI*440*t)\\,0):s=48000:d=2','-c:v','libx264','-threads','1','-c:a','aac','-shortest',sound]);assert.equal(r.code,0,r.stderr);
+ const e=await inspectVideo({videoPath:sound,expectation:{...expected,durationSeconds:2},outputDir:join(root,'e')});const pauses=e.checks.filter(c=>c.id.startsWith('silence_'));
+ assert.equal(pauses.length,2);assert(pauses[0].range[1]<.6);assert(pauses[1].range[0]>1.4);assert(pauses[1].range[1]<=2);
+});

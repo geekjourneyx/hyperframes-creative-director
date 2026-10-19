@@ -35,3 +35,22 @@ test('concept frames allowed; broken state and external symlinks fail closed',as
 test('rejects invalid format metadata without inventing defaults',()=>{
  for(const x of ['','---\nwidth: NaN\n---','---\nwidth: 0\nheight: 1080\nfps: 30\ndurationSeconds: 30\naudioRequired: false\n---'])assert.throws(()=>readSpecification(x));
 });
+test('brief permits unrelated metadata and comments without weakening format checks',async()=>{
+ const root=await film();const text=await readFile(join(root,'BRIEF.md'),'utf8');
+ const extended=text.replace('width: 640','title: "A focus timer launch"\nworkflow: general-video\ntags:\n  - launch\nwidth: "640" # output pixels');
+ assert.deepEqual(readSpecification(extended),readSpecification(text));
+ assert.throws(()=>readSpecification(extended.replace('height: 360','width: 640\nheight: 360')));
+ assert.throws(()=>readSpecification(extended.replace('fps: 30','fps: fast')));
+});
+test('stored approvals require complete confirmation and current visual review',async()=>{
+ const root=await film();await submitBrief(root);await keyReview(root,await digestBrief(root));const good=await recordApproval(root,confirmation);
+ for(const mutate of [s=>delete s.approval.confirmation.text,s=>delete s.approval.confirmation.sourceRef,s=>s.approval.confirmation.at=42,s=>delete s.approval.keyframeReview,s=>s.approval.keyframeReview.inspected=[],s=>s.approval.keyframeReview.briefDigest='wrong',s=>s.approval.keyframes=[]]){
+  const value=structuredClone(good);mutate(value);await writeFile(join(root,'.director/state.json'),JSON.stringify(value));assert.equal((await checkApproval(root)).ok,false);
+ }
+});
+test('stale approval returns to awaiting approval and requires resubmission',async()=>{
+ const root=await film();await submitBrief(root);await keyReview(root,await digestBrief(root));await recordApproval(root,confirmation);
+ await appendFile(join(root,'BRIEF.md'),'Changed claim');assert.equal((await checkApproval(root)).ok,false);
+ assert.equal(JSON.parse(await readFile(join(root,'.director/state.json'),'utf8')).phase,'awaiting_approval');
+ await assert.rejects(recordApproval(root,confirmation),/submit|changed/i);
+});

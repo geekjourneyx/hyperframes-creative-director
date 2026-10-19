@@ -77,7 +77,7 @@ The implementation baseline is HyperFrames 0.8.174 and Node.js 22+. Linux is exe
 
 Verified integration coverage includes analytical scenes, successful delayed initialization, exported opening-frame comparison, audio presence and a corrupt final file. Failed font/texture loads, stateful simulations and valid-but-visually-wrong exports need additional fixtures and real visual review; they are not covered by these passes. Provenance validation checks lightweight records, not stock-specific typed metadata or legal authorization.
 
-Known minor issues: silence candidates currently extend to the end of the film, so listen to locate their exact end; the stored `phase` does not automatically change on ready delivery or invalidated approval. Use `check-approval` and the current delivery decision rather than treating the stored phase as authoritative.
+The helpers update workflow phase after inspection and delivery, and invalidate stale or incomplete approval records. Treat the latest approval check and delivery decision as evidence; a stored phase alone is not a quality certificate.
 
 Official references: [HyperFrames](https://github.com/heygen-com/hyperframes), [documentation](https://hyperframes.heygen.com/introduction). Runtime behavior is version-sensitive; inspect the installed CLI and official skills when upgrading.
 

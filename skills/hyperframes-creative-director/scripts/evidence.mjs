@@ -54,7 +54,16 @@ export async function inspectVideo({videoPath,expectation,outputDir,run=defaultR
   if(scan.code!==0)add('signal_scan','unverified','Black/silence/peak scan failed');
   else{
     for(const [i,m] of [...scan.stderr.matchAll(/black_start:([\d.]+) black_end:([\d.]+)/g)].entries())add('black_'+i,'candidate','Dark interval needs contextual review',[video],[Number(m[1]),Number(m[2])]);
-    for(const [i,m] of [...scan.stderr.matchAll(/silence_start: ([\d.]+)/g)].entries())add('silence_'+i,'candidate','Silence may be intentional; listen in context',[video],[Number(m[1]),duration]);
+    let silenceStart=null,silenceIndex=0;
+    const finishSilence=end=>{
+      if(silenceStart!==null&&end>silenceStart)add('silence_'+silenceIndex++,'candidate','Silence may be intentional; listen in context',[video],[silenceStart,end]);
+      silenceStart=null;
+    };
+    for(const m of scan.stderr.matchAll(/silence_(start|end):\s*(-?[\d.]+)/g)){
+      const time=Math.max(0,Math.min(duration,Number(m[2])));
+      if(m[1]==='start')silenceStart=time;else finishSilence(time);
+    }
+    if(silenceStart!==null)finishSilence(duration);
     const peak=scan.stderr.match(/max_volume: ([-\d.]+) dB/);
     if(peak&&Number(peak[1])>=-.1)add('audio_peak','candidate','Near-full-scale peak; check audible distortion',[video]);
   }

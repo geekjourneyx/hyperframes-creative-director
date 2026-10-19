@@ -25,3 +25,10 @@ test('package uses public allowlist and excludes private plans',async()=>{
  assert.equal(p.engines.node,'>=22'); assert.ok(p.files.includes('skills/'));
  assert.ok(!p.files.some(x=>/docs|workspaces|eval-runs|\*/.test(x)));
 });
+test('skill UI metadata names the skill and supplies a usable invocation',async()=>{
+ const s=await readFile(resolve(root,'skills/hyperframes-creative-director/agents/openai.yaml'),'utf8');
+ assert.match(s,/display_name: "HyperFrames Creative Director"/);
+ const description=s.match(/short_description: "([^"]+)"/)?.[1];assert(description?.length>=25&&description.length<=64);
+ assert.match(s,/default_prompt: "Use \$hyperframes-creative-director /);
+ assert(!/icon_|brand_color:/.test(s),'Do not invent visual branding');
+});

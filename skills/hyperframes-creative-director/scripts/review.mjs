@@ -42,5 +42,5 @@ export function decideDelivery({approvalValid,evidence,review}){
   if(evidence?.hasAudio===true&&review?.audio!=='verified')partial.push('Audio listening is unverified');
   if(evidence?.hasAudio===null||evidence?.hasAudio===undefined)partial.push('Audio presence is unknown');
   for(const f of Array.isArray(review?.findings)?review.findings:[])if(f?.resolution==='open'&&(['blocker','major'].includes(f.severity)||['technical','content'].includes(f.category)))blocked.push('Unresolved finding: '+f.id);
-  return {status:blocked.length?'changes_required':partial.length?'partial':'ready',reasons:[...blocked,...partial],reviewerMode:review?.reviewerMode??'unverified',limitations:review?.limitations??[],remainingFindings:review?.findings?.filter(f=>f?.resolution==='open')??[]};
+  return {status:blocked.length?'changes_required':partial.length?'partial':'ready',reasons:[...blocked,...partial],reviewerMode:review?.reviewerMode??'unverified',limitations:Array.isArray(review?.limitations)?review.limitations:[],remainingFindings:Array.isArray(review?.findings)?review.findings.filter(f=>f?.resolution==='open'):[]};
 }

@@ -9,3 +9,14 @@ test('the approval command shown in the keyframe guide actually works',async()=>
  assert(line,'Expected a concrete approval command in the guide');const args=line.slice(line.indexOf(' approve ')+1).trim().split(/\s+/);const root=await film();await invoke(root,['submit']);const state=JSON.parse((await readFile(join(root,'.director/state.json'),'utf8')));await keyReview(root,state.briefDigest);await writeJSON(root,'confirmation.json',confirmation);
  const workspace=args.indexOf('--workspace');if(workspace>=0)args.splice(workspace,2);const confirmationFlag=args.find(s=>s.startsWith('--confirmation'));const result=await invoke(root,['approve',confirmationFlag,'confirmation.json']);assert.equal(result.code,0,result.stderr);
 });
+test('delivery updates phase and removes a previously ready phase when review becomes partial',async()=>{
+ const {readFile}=await import('node:fs/promises');const root=await film();const s=await invoke(root,['submit']);const digest=JSON.parse(s.stdout).briefDigest;await keyReview(root,digest);await writeJSON(root,'confirmation.json',confirmation);assert.equal((await invoke(root,['approve','--confirmation','confirmation.json'])).code,0);
+ const rendered=await run('ffmpeg',['-v','error','-f','lavfi','-i','color=red:s=640x360:r=30:d=2','-c:v','libx264','-threads','1','-pix_fmt','yuv420p',join(root,'final.mp4')]);assert.equal(rendered.code,0,rendered.stderr);
+ const inspected=await invoke(root,['inspect','--video','final.mp4']);assert.equal(inspected.code,0,inspected.stderr);const e=JSON.parse(inspected.stdout);await writeJSON(root,'sources.json',[]);
+ const review={schemaVersion:1,briefDigest:digest,videoSha256:e.videoSha256,reviewerMode:'self-review',playback:'verified',audio:'not-applicable',findings:[],limitations:['Synthetic decision-branch fixture; observation flags are not a real perceptual review.']};await writeJSON(root,'.director/review.json',review);
+ const ready=await invoke(root,['delivery','--review','.director/review.json']);assert.equal(ready.code,0,ready.stderr);assert.equal(JSON.parse(await readFile(join(root,'.director/state.json'),'utf8')).phase,'delivered');
+ for(const findings of [{}, 'invalid', 42]){
+  await writeJSON(root,'.director/review.json',{...review,findings});const blocked=await invoke(root,['delivery','--review','.director/review.json']);assert.equal(blocked.code,4,blocked.stderr);assert.equal(JSON.parse(blocked.stdout).status,'changes_required');
+ }
+ await writeJSON(root,'.director/review.json',{...review,playback:'unverified'});assert.equal((await invoke(root,['delivery','--review','.director/review.json'])).code,4);assert.equal(JSON.parse(await readFile(join(root,'.director/state.json'),'utf8')).phase,'reviewing');
+});

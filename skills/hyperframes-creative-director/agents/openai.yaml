@@ -1,0 +1,4 @@
+interface:
+  display_name: "HyperFrames Creative Director"
+  short_description: "Direct original films with keyframe approval and QA"
+  default_prompt: "Use $hyperframes-creative-director to turn my content into a promotional film, starting with a brief and actual keyframes for approval."

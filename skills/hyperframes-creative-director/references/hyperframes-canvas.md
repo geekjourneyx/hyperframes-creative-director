@@ -6,8 +6,6 @@ The [minimal example](../examples/seekable-canvas/index.html) has Canvas and Web
 
 The installed HyperFrames 0.8.174 runtime dispatches `hf-seek` with `event.detail.time`. Its three adapter participates even without a Three.js scene. A finite root duration is required. `data-no-timeline` marks a composition driven by this adapter; without it the CLI waits for a GSAP timeline that will never register. Do not add a dummy timeline. Register asynchronous construction in `window.__hf.buildReady` before starting it; reject failed resource loads with a useful diagnostic. Check the installed official skills and CLI before relying on this contract after an upgrade.
 
-The included integration tests load the actual installed runtime and call its player transport, not a manually dispatched event. They test backward/random seeks, cold starts, seeds and a cut boundary. A separate CLI export test covers compilation and final MP4 output. Identical pixels are tested within the same browser and renderer; cross-GPU bit equality is not promised.
-
 Use whichever time strategy fits the idea:
 
 | Strategy | Appropriate use | Cost |
@@ -18,4 +16,4 @@ Use whichever time strategy fits the idea:
 
 Avoid accumulated animation state, unseeded randomness, wall-clock time and network requests during capture. Prepare fonts, textures and assets first. Test seeks in order `0, 1, 2, 1, 0, 2`, then cold-start each time. Inspect frames immediately around cuts and continuous motion, including the exported video. Preserve an approved concept when changing implementation; substantial visual or factual changes need renewed approval.
 
-Sources: [official adapter](https://github.com/heygen-com/hyperframes/blob/main/skills/hyperframes-animation/adapters/three.md), [official core contract](https://github.com/heygen-com/hyperframes/blob/main/skills/hyperframes-core/SKILL.md). Version-specific behavior is verified by this repository's tests, not a compatibility promise for every future version.
+Sources: [official adapter](https://github.com/heygen-com/hyperframes/blob/main/skills/hyperframes-animation/adapters/three.md), [official core contract](https://github.com/heygen-com/hyperframes/blob/main/skills/hyperframes-core/SKILL.md). Recheck version-specific behavior when upgrading.

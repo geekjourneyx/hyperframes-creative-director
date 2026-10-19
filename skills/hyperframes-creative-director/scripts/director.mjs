@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import {readFile,realpath,stat} from 'node:fs/promises';
-import {resolve,dirname} from 'node:path';
+import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {probeEnvironment,initWorkspace} from './environment.mjs';
 import {submitBrief,recordApproval,checkApproval,readSpecification,readKeyframes,digestBrief} from './approval.mjs';
@@ -61,7 +61,9 @@ export async function main(argv){
     const videoPath=await inside(root,flags.video);
     const outputDir=await inside(root,'.director/evidence',{missing:true});
     const evidence=await inspectVideo({videoPath,expectation,outputDir});
+    await requireApproval(root);
     evidence.briefDigest=await digestBrief(root);await writeJSON(root,'.director/evidence.json',evidence);
+    const state=await readJSON(await inside(root,'.director/state.json'));state.phase='reviewing';await writeJSON(root,'.director/state.json',state);
     return {output:evidence,exitCode:evidence.checks.some(c=>c.status==='fail')?4:evidence.checks.some(c=>c.status==='unverified')?3:0};
   }
   if(!flags.review)throw new DirectorError('review is required');
@@ -72,7 +74,9 @@ export async function main(argv){
   if(await fileHash(await inside(root,evidence.videoPath))!==evidence.videoSha256)throw new DirectorError('Final video changed; inspect and review it again',4);
   const expected=await expectationFor(root);
   for(const [k,v] of Object.entries(expected))if(k!=='cutTimes'&&JSON.stringify(evidence.expectation?.[k])!==JSON.stringify(v))throw new DirectorError('Evidence does not match approved specification',4);
-  for(const path of [...evidence.artifacts??[],...evidence.checks?.flatMap(c=>c.evidence??[])??[],...review.findings?.flatMap(f=>f.evidence??[])??[]]){
+  const list=value=>Array.isArray(value)?value:[];
+  const paths=[...list(evidence.artifacts),...list(evidence.checks).flatMap(c=>list(c?.evidence)),...list(review.findings).flatMap(f=>list(f?.evidence))];
+  for(const path of paths){
     if(typeof path!=='string'||!(await stat(await inside(root,path))).isFile())throw new DirectorError('Missing evidence file',4);
   }
   const sources=await readJSON(await inside(root,'sources.json'));const issues=validateSources(sources);
@@ -80,6 +84,7 @@ export async function main(argv){
   const decision=decideDelivery({approvalValid:true,evidence,review});
   if(issues.length){decision.status='changes_required';decision.reasons.push(...issues);}
   await writeJSON(root,'.director/delivery.json',decision);
+  const state=await readJSON(await inside(root,'.director/state.json'));state.phase=decision.status==='ready'?'delivered':'reviewing';await writeJSON(root,'.director/state.json',state);
   return {output:decision,exitCode:decision.status==='ready'?0:4};
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href){
