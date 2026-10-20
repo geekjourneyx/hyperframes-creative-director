@@ -1,25 +1,52 @@
-# HyperFrames Creative Director
+<p align="center">
+  <img src="assets/readme/hero.svg" width="100%" alt="HyperFrames Creative Director, an Agent Skill for turning ideas, products, and stories into cinematic promotional films, with a concept-to-keyframes-to-review workflow." />
+</p>
 
-An English-first Agent Skill for turning a topic, product, article or story into a distinctive promotional film with **HyperFrames + Canvas/WebGL + FFmpeg**.
+<p align="center">
+  <strong>An Agent Skill for cinematic video production with HyperFrames.</strong><br />
+  Turn ideas, products, articles, and stories into promotional films through a content-led creative workflow.
+</p>
 
-Creative choices stay open. Review the brief and real keyframes first; inspect the exported film before delivery.
+<p align="center">
+  <a href="https://github.com/heygen-com/hyperframes">HyperFrames</a> ·
+  <a href="https://hyperframes.heygen.com/introduction">Documentation</a> ·
+  <a href="LICENSE">Apache-2.0</a>
+</p>
+
+## What it does
+
+**HyperFrames Creative Director** helps a coding agent take a film from an initial idea to a reviewed export. The content drives the creative direction; the workflow keeps important decisions visible and the final deliverable inspectable.
+
+- **Content-led direction.** Develop a concept, narrative, shots, copy, and sound direction from the actual source material.
+- **Review before production.** Prepare one brief and actual keyframe images for approval before full animation and rendering.
+- **Flexible visual techniques.** Combine HTML/SVG, Canvas/WebGL, Three.js, generated or licensed media, and sound when they serve the concept.
+- **Reproducible workflow.** Use HyperFrames for composition, timing, preview, and export, with isolated workspaces for individual films.
+- **Final-file QA.** Inspect the exported MP4, extract frames and continuous excerpts, and record review evidence against the delivered file.
+- **Honest review status.** Distinguish technical checks, self-review, and independent review; mark unavailable playback or listening checks as unverified.
+
+No fixed visual style, mandatory shot count, or generated-asset quota. The creative approach should fit the story.
 
 ## Install
 
+Requirements: Node.js 22 or newer. Video production and integration checks may also need the official HyperFrames runtime, a compatible browser, and FFmpeg/ffprobe.
+
 ```bash
+# Install this Agent Skill
 npx skills add geekjourneyx/hyperframes-creative-director
+
+# Install the official HyperFrames skills
 npx skills add heygen-com/hyperframes
 ```
 
-The first command installs this director skill. The second installs the official HyperFrames skills; it does not by itself prove the video CLI, browser or media tools are ready. Use Node.js 22 or newer and check the installed HyperFrames version's requirements.
+The second command installs skills; it does not, by itself, verify that the CLI, browser, or media tools are ready. Check the installed HyperFrames version's requirements before production.
 
-## Make a film
+## Make your first film
 
 Ask your coding agent:
 
-> Create a 30-second promotional film from this product README. First show me one brief and actual keyframes for approval. Use HyperFrames and whichever visual techniques fit the content.
+> Turn this product README into a 30-second promotional film. First show me one creative brief and the actual keyframes for approval. Use whichever visual techniques fit the content.
 
-The agent checks dependencies and creates a separate workspace:
+The agent checks the environment and creates a separate workspace:
 
 ```bash
 npx hyperframes init my-video
@@ -28,38 +55,59 @@ npx hyperframes preview
 npx hyperframes render
 ```
 
-Full animation and production rendering follow approval of `BRIEF.md` and the displayed keyframes. Static sketches and keyframe previews can be prepared before approval. English is the default output language; explicitly request another language when needed. Choose aspect ratio and duration in the brief.
+Choose the duration and aspect ratio in the brief. English is the default output language; request another language explicitly when needed. Full animation and production rendering wait until the brief and displayed keyframes are approved. Concept sketches and keyframe previews can be prepared beforehand.
 
-For an agent-managed preview handoff, the tested CLI also supports `npx hyperframes preview --background`, `--status` and `--stop`.
+For an agent-managed preview handoff, the tested CLI also supports:
+
+```bash
+npx hyperframes preview --background
+npx hyperframes preview --status
+npx hyperframes preview --stop
+```
+
+Check the installed CLI's help for version-specific options.
+
+## The workflow
+
+1. **Understand.** Read the source, audience, key message, factual claims, and desired response.
+2. **Direct.** Create one brief covering the concept, narrative, copy, shot direction, and sound.
+3. **Review keyframes.** Generate and inspect actual keyframe images, then ask the user to approve the brief and images together.
+4. **Produce.** Use HyperFrames for timing, composition, preview, and export; add Canvas/WebGL or other techniques when useful.
+5. **Inspect.** Review the exported MP4, including actual frames, continuous motion, sound, and source fidelity.
+6. **Deliver.** Provide the video, reproducible project, brief, keyframes, media provenance, and an honest review summary.
+
+Material changes to the approved direction require renewed approval. Never fabricate user approval, playback observations, media provenance, or independent review.
 
 ## Quality helpers
 
-Run `node <installed-skill>/scripts/director.mjs help` from any directory. The host's skill entry identifies the installed directory; it is not necessarily the repository path. Helpers require Node.js and FFmpeg/ffprobe, with no separate npm install in the skill directory.
+Run the helper's command-line interface from any directory:
+
+```bash
+node <installed-skill>/scripts/director.mjs help
+```
+
+Resolve the installed skill directory from the host's skill entry; it is not necessarily the repository path. The helpers use Node.js and installed media/HyperFrames tools, without a separate npm install inside the skill directory.
 
 | Command | Purpose |
 | --- | --- |
 | `doctor --workspace PATH` | Inspect dependencies without downloading them |
-| `init --parent PATH --name my-video` | Create a new isolated HyperFrames workspace |
-| `submit --workspace PATH` | Decode actual keyframe images and record the current brief digest |
-| `approve --workspace PATH --confirmation confirmation.json` | Record an observed user confirmation after keyframe review |
-| `check-approval --workspace PATH` | Reject stale brief/image approval |
-| `render --workspace PATH --output final.mp4` | Check approval and call the official renderer |
-| `inspect --workspace PATH --video final.mp4` | Inspect the final file and extract frames and continuous excerpts |
-| `delivery --workspace PATH --review .director/review.json` | Check approval, hashes, provenance and review completeness |
+| `init --parent PATH --name my-video` | Create an isolated HyperFrames workspace |
+| `submit --workspace PATH` | Decode actual keyframe images and record the brief digest |
+| `approve --workspace PATH --confirmation confirmation.json` | Record a user confirmation after keyframe review |
+| `check-approval --workspace PATH` | Reject stale brief or image approval |
+| `render --workspace PATH --output final.mp4` | Check approval and invoke the official renderer |
+| `inspect --workspace PATH --video final.mp4` | Inspect the final file and extract frames and excerpts |
+| `delivery --workspace PATH --review .director/review.json` | Check hashes, provenance, approval, and review completeness |
 
-See the skill's [keyframe contract](skills/hyperframes-creative-director/references/keyframe-review.md), [media contract](skills/hyperframes-creative-director/references/media-audio.md) and [review contract](skills/hyperframes-creative-director/references/final-review.md) for the small JSON records. `sources.json` is required for delivery; use `[]` when there are no tracked media assets. An optional inspection expectation may supply cut times but cannot weaken the approved format or keyframe schedule.
+The review records are workflow evidence, not authenticated user identities or a sandbox around the official CLI. A technical pass cannot prove artistic merit or override the user's rejection.
 
-These are workflow guardrails, not user authentication or a sandbox around the official CLI. Never fabricate approval or playback observations. Missing playback/listening produces a partial decision. A passed technical check cannot prove artistic merit or override the user's rejection.
+## Design principles and limits
 
-## Design
-
-- **Director:** understands content and designs the concept, shots and sound.
-- **HyperFrames:** composes, seeks, previews and renders the film.
-- **Canvas/WebGL:** optional procedural visuals, shaders and 3D.
-- **FFmpeg:** media inspection, evidence extraction and post-production.
-- **Reviewer:** checks actual final frames, motion, sound and content. Independent review is identified separately from self-review.
-
-No fixed color palette, shot quota, mandatory generated assets or numerical creativity gate. Keep source claims accurate and media rights traceable. Black frames and silence may be intentional; automated detectors raise candidates for contextual review.
+- **Content before effects.** Choose visual language, pacing, camera, music, and techniques to serve the material.
+- **Human approval at the right point.** Full production follows review of the actual brief and keyframes.
+- **Evidence over assumptions.** A screenshot sheet cannot verify timing or sound; unavailable checks remain unverified.
+- **Traceable media.** Track source and rights information for external assets. Lightweight provenance records do not establish legal authorization.
+- **No false guarantees.** Automated checks catch some technical issues, not every valid-but-visually-wrong export.
 
 ## Development
 
@@ -71,17 +119,15 @@ npm run test:integration
 npm run check:package
 ```
 
-Install FFmpeg/ffprobe using your OS package manager. Integration checks require Chromium and FFmpeg; `CHROMIUM_PATH` can select an existing compatible Chromium executable. Missing tools fail integration tests rather than counting as a successful render. The synthetic pipeline uses explicitly labeled test approvals and leaves human playback/listening unverified.
+Install FFmpeg/ffprobe using your OS package manager. Integration checks require Chromium and FFmpeg; `CHROMIUM_PATH` can select an existing compatible Chromium executable. Missing tools fail integration tests rather than counting as a successful render.
 
-The implementation baseline is HyperFrames 0.8.174 and Node.js 22+. Linux is exercised locally; the CI matrix also targets macOS, whose result must be checked on an actual run. Browser/GPU differences may affect pixels. The Canvas/WebGL example tests repeatability within one renderer, not universal bit-exact output. See [evaluation protocol](evals/README.md) for controlled comparisons. No creative pilot or holdout benchmark has established a win rate.
+The implementation baseline is HyperFrames 0.8.174 and Node.js 22+. Linux is exercised locally; the CI matrix also targets macOS, whose result should be checked on an actual run. Browser and GPU differences may affect pixels. Canvas/WebGL integration tests verify repeatability within one renderer, not universal bit-exact output. See the [evaluation protocol](evals/README.md) for controlled comparisons; no creative pilot or holdout benchmark has established a win rate.
 
-Verified integration coverage includes analytical scenes, successful delayed initialization, exported opening-frame comparison, audio presence and a corrupt final file. Failed font/texture loads, stateful simulations and valid-but-visually-wrong exports need additional fixtures and real visual review; they are not covered by these passes. Provenance validation checks lightweight records, not stock-specific typed metadata or legal authorization.
+Known coverage gaps include failed font/texture loading, stateful simulations, and valid-but-visually-wrong exports. These need additional fixtures and real visual review. Synthetic test approvals do not count as real-user approval, and test results do not certify creative quality or audience response.
 
-The helpers update workflow phase after inspection and delivery, and invalidate stale or incomplete approval records. Treat the latest approval check and delivery decision as evidence; a stored phase alone is not a quality certificate.
+Official references: [HyperFrames](https://github.com/heygen-com/hyperframes) and its [documentation](https://hyperframes.heygen.com/introduction). Runtime behavior is version-sensitive; inspect the installed CLI and official skills when upgrading.
 
-Official references: [HyperFrames](https://github.com/heygen-com/hyperframes), [documentation](https://hyperframes.heygen.com/introduction). Runtime behavior is version-sensitive; inspect the installed CLI and official skills when upgrading.
-
-Local video projects, evaluation runs and `docs/superpowers/` are excluded from source control and release packages.
+Local video projects, evaluation runs, and `docs/superpowers/` are excluded from source control and release packages.
 
 ## License
 
