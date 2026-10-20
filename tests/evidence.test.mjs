@@ -21,3 +21,14 @@ test('silence intervals stop when sound resumes and retain unfinished tail silen
  const e=await inspectVideo({videoPath:sound,expectation:{...expected,durationSeconds:2},outputDir:join(root,'e')});const pauses=e.checks.filter(c=>c.id.startsWith('silence_'));
  assert.equal(pauses.length,2);assert(pauses[0].range[1]<.6);assert(pauses[1].range[0]>1.4);assert(pauses[1].range[1]<=2);
 });
+test('optional loudness evidence binds raw output to the final file without a target gate',async()=>{
+ const {root,video}=await fixture();
+ const e=await inspectVideo({videoPath:video,expectation:expected,outputDir:join(root,'e')});
+ assert.equal(e.audioMetrics.status,'measured');assert(Number.isFinite(e.audioMetrics.integratedLufs));assert(Number.isFinite(e.audioMetrics.truePeakDbtp));
+ const record=JSON.parse(await readFile(e.audioMeasurement.path,'utf8'));assert.equal(record.videoSha256,e.videoSha256);assert.equal(record.stream,'0:a:0');assert(record.raw.stderr.includes('input_i'));
+ assert(!e.checks.some(c=>c.id==='loudness'));
+ const disabled=await inspectVideo({videoPath:video,expectation:expected,outputDir:join(root,'disabled'),measureAudioMetrics:false});
+ assert.equal(disabled.audioMetrics.status,'unverified');assert.equal(disabled.audioMeasurement,undefined);
+ const unavailable=await inspectVideo({videoPath:video,expectation:expected,outputDir:join(root,'missing'),run:async(bin,args)=>args.some(arg=>arg.startsWith('loudnorm='))?{code:127,stdout:'',stderr:'missing filter'}:run(bin,args)});
+ assert.equal(unavailable.audioMetrics.status,'unverified');assert.equal(unavailable.checks.find(c=>c.id==='audio_presence').status,'pass');
+});

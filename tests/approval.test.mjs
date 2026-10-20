@@ -54,3 +54,13 @@ test('stale approval returns to awaiting approval and requires resubmission',asy
  assert.equal(JSON.parse(await readFile(join(root,'.director/state.json'),'utf8')).phase,'awaiting_approval');
  await assert.rejects(recordApproval(root,confirmation),/submit|changed/i);
 });
+test('free-text and empty craft references need no enum; creative body edits invalidate approval',async()=>{
+ const root=await film();const text=await readFile(join(root,'BRIEF.md'),'utf8');
+ const notes='\n| Decision | Direction |\n| --- | --- |\n| selected_refs | Custom shadow assembly, no catalog ID |\n| memory_point | Shared knowledge |\n';
+ assert.deepEqual(readSpecification(text+notes),readSpecification(text));
+ await writeFile(join(root,'BRIEF.md'),text+notes);await submitBrief(root);await keyReview(root,await digestBrief(root));await recordApproval(root,confirmation);
+ assert.equal((await checkApproval(root)).ok,true);
+ await writeFile(join(root,'BRIEF.md'),text+notes.replace('Custom shadow assembly, no catalog ID',''));
+ assert.deepEqual(readSpecification(await readFile(join(root,'BRIEF.md'),'utf8')),readSpecification(text));
+ assert.equal((await checkApproval(root)).ok,false);
+});

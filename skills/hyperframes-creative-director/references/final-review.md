@@ -30,3 +30,15 @@ Prioritize repairs by viewer impact and cost. Keep the previous candidate so imp
 If the user rejects a version, it is not accepted delivery even if the tools pass. Record the rejection and requested revision. Major changes to the concept, claims, format or keyframes require renewed approval. Implementation fixes that preserve the approved intent do not require another creative approval round.
 
 Present the [review summary](../templates/REVIEW.md), final video, editable project, provenance and any limitations. Never claim a human or agent watched or heard material that it did not actually observe.
+
+## Contextual craft and engineering review
+
+- Inspect the actual final glyphs, long copy, source values and requested crop at delivery size. Font discovery or `document.fonts.ready` does not prove glyph coverage. Resolve real clipping/occlusion; decorative overflow may be intentional.
+- Compare full composition frames and continuous motion around transformed layers. A transformed element screenshot can change dimensions; use a fixed full-frame capture for export comparisons. Apply intentional camera shake to an inner world layer rather than distorting the output stage.
+- Keep long commands readable by reflowing/cropping to the relevant operation; measure and inspect overflow. Never shrink proof into illegibility to pass a bounds check.
+- Verify final encode/decode before removing intermediate frames. A contact sheet can help locate a concern but never overrides evidence of a real full-frame or motion defect.
+- Check light direction, material response, mask occlusion, camera orientation and readable final holds against the concept. Avoid evaluating by effect count or palette compliance.
+- Review optional audio measurements against any project-selected target, then listen. Only designated sync events need their declared tolerance; no global all-cuts-on-beat gate. Record actual soundtrack hash/crop and anchor observations.
+- For flashes, inspect frequency, area and luminance as relevant. Effect opacity does not certify flash safety; no automated safety certification is provided here.
+
+Use [contextual cautions](anti-patterns.md) to distinguish correctness failures, strong creative cautions and recipe-local preferences. New/custom techniques have the same evidence and approval obligations as familiar ones.

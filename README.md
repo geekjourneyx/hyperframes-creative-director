@@ -10,7 +10,7 @@
 <p align="center">
   <a href="https://github.com/heygen-com/hyperframes">HyperFrames</a> ·
   <a href="https://hyperframes.heygen.com/introduction">Documentation</a> ·
-  <a href="LICENSE">Apache-2.0</a>
+  <a href="LICENSE">AGPL-3.0-only</a>
 </p>
 
 ## What it does
@@ -25,6 +25,10 @@
 - **Honest review status.** Distinguish technical checks, self-review, and independent review; mark unavailable playback or listening checks as unverified.
 
 No fixed visual style, mandatory shot count, or generated-asset quota. The creative approach should fit the story.
+
+The optional [craft library](skills/hyperframes-creative-director/references/craft-library.md) connects content to typography, product evidence, lighting/materials, masks/transitions, spatial 3D and motion/sound. Its [vocabulary index](skills/hyperframes-creative-director/references/craft-index.md) preserves issue-derived ideas and their evidence status; twelve detailed entries and six paired [source studies](skills/hyperframes-creative-director/examples/craft-studies/README.md) provide execution paths. Reuse, adapt, combine, invent, or use no catalog reference. Dark cinema is one possible recipe.
+
+The new studies and audio measurement fixtures are authored but **not yet runtime or visually verified**. Automated tests, renders and the eight-film pilot are paused at the user's request. No quality improvement is claimed from source completion. See the [evidence and issue dispositions](docs/research/craft-evidence.md) and [pilot protocol](evals/README.md#craft-upgrade-pilot).
 
 ## Install
 
@@ -123,7 +127,7 @@ Install FFmpeg/ffprobe using your OS package manager. Integration checks require
 
 The implementation baseline is HyperFrames 0.8.174 and Node.js 22+. Linux is exercised locally; the CI matrix also targets macOS, whose result should be checked on an actual run. Browser and GPU differences may affect pixels. Canvas/WebGL integration tests verify repeatability within one renderer, not universal bit-exact output. See the [evaluation protocol](evals/README.md) for controlled comparisons; no creative pilot or holdout benchmark has established a win rate.
 
-Known coverage gaps include failed font/texture loading, stateful simulations, and valid-but-visually-wrong exports. These need additional fixtures and real visual review. Synthetic test approvals do not count as real-user approval, and test results do not certify creative quality or audience response.
+New font/texture/WebGL failure fixtures await execution. Stateful simulations and valid-but-visually-wrong exports still need additional coverage and real visual review. Synthetic test approvals do not count as real-user approval, and test results do not certify creative quality or audience response.
 
 Official references: [HyperFrames](https://github.com/heygen-com/hyperframes) and its [documentation](https://hyperframes.heygen.com/introduction). Runtime behavior is version-sensitive; inspect the installed CLI and official skills when upgrading.
 
@@ -138,6 +142,6 @@ Local video projects, evaluation runs, and `docs/superpowers/` are excluded from
 
 ## License
 
-This project is licensed under the [GNU Affero General Public License v3.0](https://github.com/geekjourneyx/hyperframes-motion-director/blob/main/LICENSE). The full license text is included in [LICENSE](LICENSE).
+This project is licensed under the [GNU Affero General Public License v3.0](LICENSE) (AGPL-3.0-only).
 
 Third-party media, dependencies, and tools retain their respective licenses.

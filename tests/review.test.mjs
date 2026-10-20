@@ -19,3 +19,10 @@ test('a candidate still detected in current evidence cannot be cleared as fixed'
 test('malformed findings return a blocked decision instead of crashing',()=>{
  for(const findings of [{},'unchecked',42])assert.equal(decide(evidence,{...review,findings}).status,'changes_required');
 });
+test('optional audio metrics do not create a new delivery gate or replace listening',()=>{
+ for(const audioMetrics of [undefined,{status:'unverified',integratedLufs:null,truePeakDbtp:null},{status:'measured',integratedLufs:-28,truePeakDbtp:-3}]){
+  const e={...evidence,...(audioMetrics?{audioMetrics}:{})};
+  assert.equal(decide(e).status,'ready');
+  assert.equal(decide(e,{...review,audio:'unverified'}).status,'partial');
+ }
+});

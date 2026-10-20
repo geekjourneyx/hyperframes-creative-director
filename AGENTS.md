@@ -8,4 +8,4 @@
 - Use parameter arrays for subprocesses. Keep paths inside the intended workspace and do not overwrite existing projects.
 - Keep `docs/superpowers/`, `.superpowers/`, `workspaces/`, `eval-runs/`, credentials and generated production media untracked. Never force-add them. Check the staged file list and package contents before publishing.
 - Maintain the package allowlist. Do not include private plans in release archives, PR descriptions or attachments.
-- Do not copy AGPL code from the earlier motion-director project into this independently authored Apache-2.0 implementation.
+- Preserve independent authorship and inspect source licenses before copying external code. This repository is licensed AGPL-3.0-only; that does not automatically authorize importing another project's assets or code.

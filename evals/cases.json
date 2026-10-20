@@ -1,7 +1,60 @@
 [
-  {"id":"typography","brief":"Create a 30-second typographic film about attention. Make one idea memorable.","assets":"Original copy only","boundary":"No music; long titles must remain readable."},
-  {"id":"product","brief":"Create a 30-second launch film using a supplied working product and verified feature list.","assets":"Captured real UI, supplied logo and feature evidence","boundary":"Do not invent product capabilities or unreadable UI."},
-  {"id":"webgl","brief":"Create a 30-second film that makes an abstract network feel understandable through procedural space.","assets":"Original generated geometry","boundary":"Include an intentional dark pause; it must be reviewed in context."},
-  {"id":"montage","brief":"Create a 30-second destination film using the supplied footage and licensed sound.","assets":"Supplied footage, one track with unresolved permission","boundary":"Resolve or replace the unresolved asset; respect the stated budget."},
-  {"id":"abstract","brief":"Create a 30-second film about trust that communicates without a prescribed visual style.","assets":"Original material or documented licensed assets","boundary":"The user supplies a long Chinese headline and requests Chinese output; honor that language override."}
+  {
+    "id": "typography",
+    "brief": "Create a 30-second typographic film about attention. Make one idea memorable.",
+    "assets": "Original copy only",
+    "boundary": "No music; long titles must remain readable."
+  },
+  {
+    "id": "product",
+    "brief": "Create a 30-second launch film using a supplied working product and verified feature list.",
+    "assets": "Captured real UI, supplied logo and feature evidence",
+    "boundary": "Do not invent product capabilities or unreadable UI."
+  },
+  {
+    "id": "webgl",
+    "brief": "Create a 30-second film that makes an abstract network feel understandable through procedural space.",
+    "assets": "Original generated geometry",
+    "boundary": "Include an intentional dark pause; it must be reviewed in context."
+  },
+  {
+    "id": "montage",
+    "brief": "Create a 30-second destination film using the supplied footage and licensed sound.",
+    "assets": "Supplied footage, one track with unresolved permission",
+    "boundary": "Resolve or replace the unresolved asset; respect the stated budget."
+  },
+  {
+    "id": "abstract",
+    "brief": "Create a 30-second film about trust that communicates without a prescribed visual style.",
+    "assets": "Original material or documented licensed assets",
+    "boundary": "The user supplies a long Chinese headline and requests Chinese output; honor that language override."
+  },
+  {
+    "id": "craft-product",
+    "pilot": "craft-upgrade",
+    "brief": "Create a 20-second md2wechat product film showing a real source-to-published-result workflow from supplied UI evidence. Let its actual brand and content determine the visual idea.",
+    "assets": "The same actual md2wechat UI captures, real source/result, supplied logo/brand guide and verified capability notes for both conditions; obtain these before the pilot.",
+    "boundary": "Do not invent commands, UI or efficiency multipliers; no mandatory dark background or music drop. Preserve readable proof."
+  },
+  {
+    "id": "craft-zh-portrait",
+    "pilot": "craft-upgrade",
+    "brief": "Create a bright Chinese vertical 20-second film: 把分散的信息，变成清晰的下一步。 Show the supplied real workflow.",
+    "assets": "Matched documented source/result captures, supplied bright brand identity, licensed CJK font",
+    "boundary": "1080x1920 at 30 fps; preserve full Chinese headline, source identity, mobile readability and result hold."
+  },
+  {
+    "id": "craft-spatial",
+    "pilot": "craft-upgrade",
+    "brief": "Create a 20-second film explaining how separate layers form a useful system. Use spatial relationships where they clarify the idea.",
+    "assets": "Identical original geometry/data and source explanation",
+    "boundary": "Label conceptual illustrations; preserve orientation, contrast and evidence. Light/masks/3D are allowed without a spectacle quota."
+  },
+  {
+    "id": "craft-custom-silent",
+    "pilot": "craft-upgrade",
+    "brief": "Create a silent 20-second film about a promise remaining recognizable as it passes through different people. Derive a visual relationship from the meaning.",
+    "assets": "Original copy and shapes; no supplied style template",
+    "boundary": "No soundtrack. A custom, adapted or library-free approach is valid; novelty and technique IDs are not required. Hold readable final copy."
+  }
 ]

@@ -44,3 +44,7 @@ These are placeholders, not an approval fixture. User approval must apply to the
 Changing brief bytes or image bytes invalidates the approval. `check-approval` also invalidates incomplete stored evidence and returns the phase to `awaiting_approval`. Re-submit, re-review and show the revision; the old record cannot approve new content. Routine animation or loading fixes do not need fresh creative approval. Material semantic drift in the final result requires renewed approval even if the stored files have not changed.
 
 Urgency, a deadline, or approval of copy alone does not waive approval of unseen keyframes. If the user expressly waives the usual workflow, follow that explicit instruction and report the missing review honestly. Do not write fake approval records to make auxiliary tooling pass. An overridden workflow has no normal approved-delivery certification.
+
+## Craft questions
+
+Inspect attention hierarchy, meaningful reveal, product/source fidelity, small-screen reading, actual glyphs and the final hold. For Chinese portrait work, reflow copy and inspect the actual requested font; font discovery is not glyph-rendering evidence. Check whether light, masks or camera angles hide the proof. Record risks that stills cannot resolve and the cheapest motion probe. Do not count effects or require a recipe/catalog ID. A custom technique uses this same approval boundary.
