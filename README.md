@@ -129,6 +129,15 @@ Official references: [HyperFrames](https://github.com/heygen-com/hyperframes) an
 
 Local video projects, evaluation runs, and `docs/superpowers/` are excluded from source control and release packages.
 
+## Author
+
+- Website: [jieni.ai](https://jieni.ai/)
+- GitHub: [geekjourneyx](https://github.com/geekjourneyx)
+- X: [@seekjourney](https://x.com/seekjourney)
+- WeChat Official Account: 极客杰尼
+
 ## License
 
-Apache-2.0. This is an independently authored implementation. Third-party media and tools retain their own licenses.
+This project is licensed under the [GNU Affero General Public License v3.0](https://github.com/geekjourneyx/hyperframes-motion-director/blob/main/LICENSE). The full license text is included in [LICENSE](LICENSE).
+
+Third-party media, dependencies, and tools retain their respective licenses.
