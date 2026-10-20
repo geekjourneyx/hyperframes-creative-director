@@ -1,0 +1,37 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {mkdtemp,cp,readFile,writeFile,mkdir} from 'node:fs/promises';import {tmpdir} from 'node:os';import {resolve,join} from 'node:path';import sharp from 'sharp';
+import {sceneServer,launchBrowser} from './browser-helper.mjs';
+import {run,writeJSON,readJSON} from '../../skills/hyperframes-creative-director/scripts/io.mjs';
+import {confirmation,keyReview} from '../helpers.mjs';
+const repo=resolve('.'),cli=join(repo,'skills/hyperframes-creative-director/scripts/director.mjs'),hf=join(repo,'node_modules/.bin/hyperframes');
+const invoke=(root,args)=>run(process.execPath,[cli,...args,'--workspace',root]);
+for(const mode of ['canvas','webgl'])test(`${mode}: official init, approved fixture, delayed assets, MP4 and evidence`,{timeout:120000},async()=>{
+ const parent=await mkdtemp(join(tmpdir(),'director-pipeline-'));const root=join(parent,'film');
+ process.env.HYPERFRAMES_SKIP_SKILLS='1';process.env.HYPERFRAMES_NO_TELEMETRY='1';process.env.DO_NOT_TRACK='1';if(process.env.CHROMIUM_PATH)process.env.HYPERFRAMES_BROWSER_PATH=process.env.CHROMIUM_PATH;
+ process.env.PRODUCER_BROWSER_GPU_MODE='software';
+ const initialized=await run(hf,['init',root,'--non-interactive']);assert.equal(initialized.code,0,initialized.stderr);
+ await cp(join(repo,'skills/hyperframes-creative-director/examples/seekable-canvas'),root,{recursive:true});await mkdir(join(root,'keyframes'));
+ const server=await sceneServer();let browser;
+ try{browser=await launchBrowser();const page=await browser.newPage();await page.goto(`${server.url}/?mode=${mode}`);await page.waitForFunction(()=>window.__playerReady&&window.sceneReady);await page.evaluate(async()=>{window.__player.renderSeek(0);await window.__hfWaitForSeekCompletion?.();});await page.locator('canvas').screenshot({path:join(root,'keyframes/open.png')});}finally{await browser?.close();await server.close();}
+ await writeFile(join(root,'BRIEF.md'),'---\nwidth: 640\nheight: 360\nfps: 30\ndurationSeconds: 3\naudioRequired: true\n---\n# Synthetic integration fixture\nNot a real user approval or creative-quality assessment.\n## Keyframes\n| ID | Time | Path | Kind |\n| --- | --- | --- | --- |\n| opening | 0 | keyframes/open.png | rendered |\n');
+ const submit=await invoke(root,['submit']);assert.equal(submit.code,0,submit.stderr);assert.equal((await invoke(root,['check-approval'])).code,2);
+ await keyReview(root,JSON.parse(submit.stdout).briefDigest);await writeJSON(root,'confirmation.json',{...confirmation,text:'SYNTHETIC TEST FIXTURE approval; not a user film.'});
+ assert.equal((await invoke(root,['approve','--confirmation','confirmation.json'])).code,0);
+ let html=await readFile(join(root,'index.html'),'utf8');
+ html=html.replace("options.get('mode') === 'webgl'",String(mode==='webgl')).replace('await document.fonts.ready;','await document.fonts.ready;\n  await new Promise(resolve => setTimeout(resolve, 750));');
+ html=html.replace('</div>','<audio id="fixture-sound" src="sound.wav" data-start="0" data-duration="3"></audio></div>');await writeFile(join(root,'index.html'),html);
+ assert.equal((await run('ffmpeg',['-v','error','-f','lavfi','-i','sine=frequency=440:duration=3',join(root,'sound.wav')])).code,0);
+ const rendered=await run(hf,['render',root,'-o',join(root,'final.mp4'),'--quality','draft'],{timeout:90000});assert.equal(rendered.code,0,rendered.stderr.slice(-1500));assert(!rendered.stderr.includes('sub_timeline_readiness_timeout'));
+ await writeJSON(root,'expectation.json',{width:640,height:360,fps:30,durationSeconds:3,audioRequired:true,cutTimes:[1]});
+ const inspected=await invoke(root,['inspect','--video','final.mp4','--expectation','expectation.json']);assert.equal(inspected.code,0,inspected.stderr);const evidence=JSON.parse(inspected.stdout);
+ const first=evidence.artifacts.find(p=>p.endsWith('frame-0.000000.png'));
+ const a=await sharp(first).removeAlpha().raw().toBuffer(),b=await sharp(join(root,'keyframes/open.png')).removeAlpha().raw().toBuffer();assert.equal(a.length,b.length);let error=0;for(let i=0;i<a.length;i++)error+=Math.abs(a[i]-b[i]);assert(error/a.length<8,'The exported opening must match the rendered keyframe, not an empty loading frame');
+ const later=evidence.artifacts.find(p=>p.endsWith('frame-1.000000.png'));assert.notDeepEqual(await readFile(first),await readFile(later),'Export must advance the scene');
+ await writeJSON(root,'sources.json',[{path:'sound.wav',source:'Generated sine fixture',license:'Own work',permission:'resolved',evidence:'FFmpeg sine filter'}]);
+ await writeJSON(root,'.director/review.json',{schemaVersion:1,briefDigest:evidence.briefDigest,videoSha256:evidence.videoSha256,reviewerMode:'self-review',playback:'unverified',audio:'unverified',findings:[],limitations:['Software integration fixture; full playback and listening have not been reviewed.']});
+ const delivery=await invoke(root,['delivery','--review','.director/review.json']);assert.equal(delivery.code,4,delivery.stderr);assert.equal(JSON.parse(delivery.stdout).status,'partial');
+ await writeFile(join(root,'final.mp4'),'broken after successful preview');assert.equal((await invoke(root,['delivery','--review','.director/review.json'])).code,4);
+ const broken=await invoke(root,['inspect','--video','final.mp4']);assert.equal(broken.code,4);
+ await writeFile(join(root,'BRIEF.md'),'changed');assert.equal((await invoke(root,['check-approval'])).code,2);
+ console.log(`Retained synthetic integration evidence: ${root}`);
+});

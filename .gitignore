@@ -9,3 +9,8 @@ node_modules/
 .env.*
 !.env.example
 .DS_Store
+
+/.superpowers/
+/test-results/
+/playwright-report/
+*.tgz
