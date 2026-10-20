@@ -4,7 +4,7 @@
   "private": true,
   "description": "An English-first creative direction skill for HyperFrames and seekable Canvas/WebGL films.",
   "type": "module",
-  "license": "Apache-2.0",
+  "license": "AGPL-3.0-only",
   "engines": {
     "node": ">=22"
   },
