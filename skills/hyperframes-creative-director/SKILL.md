@@ -21,6 +21,8 @@ Turn the user's content into a distinctive, complete film. Let the content guide
 
 Choose style, shot count, color, camera, pacing, music and effects freely. No mandatory twist, generated background, particle count, fixed director template or aesthetic score threshold. A quiet scene can be effective. A programmed scene can be sufficient.
 
+When execution guidance helps, consult the optional [craft library](references/craft-library.md) and load only relevant references. Start with content and a visual idea; reuse, adapt, combine or invent techniques, including a library-free approach. Use [contextual cautions](references/anti-patterns.md) to diagnose actual problems. Treat showreels as dictionaries, never compulsory shot sequences.
+
 Use independent reviewer context when available: source facts, approved brief, keyframes and film first; omit the author's self-score and justification. Technical checks support judgment; they do not certify creativity or audience response.
 
 Run `node <installed-skill>/scripts/director.mjs help` for helper commands. Resolve the installed skill directory from the host's skill entry; do not assume the current working directory is this repository. Helpers use Node built-ins and the installed media/HyperFrames tools. They record observations supplied by the agent, not authenticated user identities or automated aesthetic judgments.

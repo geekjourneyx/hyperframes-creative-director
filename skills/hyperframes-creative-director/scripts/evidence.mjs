@@ -1,6 +1,7 @@
 import {mkdir} from 'node:fs/promises';
 import {resolve,join} from 'node:path';
-import {run as defaultRun,fileHash,check,DirectorError,inside} from './io.mjs';
+import {run as defaultRun,fileHash,check,DirectorError,inside,writeJSON} from './io.mjs';
+import {measureAudio} from './audio.mjs';
 
 export const requiredChecks=['decode','video_track','dimensions','frame_rate','duration','audio_presence'];
 export const rational=value=>{const [a,b=1]=String(value).split('/').map(Number);return b? a/b:NaN;};
@@ -9,7 +10,7 @@ export function validateExpectation(e){
   if(typeof e.audioRequired!=='boolean')throw new DirectorError('audioRequired must be boolean');
   for(const name of ['keyframeTimes','cutTimes'])for(const t of e[name]??[])if(!Number.isFinite(t)||t<0||t>=e.durationSeconds)throw new DirectorError('Invalid sample time');
 }
-export async function inspectVideo({videoPath,expectation,outputDir,run=defaultRun}){
+export async function inspectVideo({videoPath,expectation,outputDir,run=defaultRun,measureAudioMetrics=true}){
   validateExpectation(expectation);
   const video=resolve(videoPath),hash=await fileHash(video);
   const base=resolve(outputDir);await mkdir(base,{recursive:true});
@@ -21,6 +22,17 @@ export async function inspectVideo({videoPath,expectation,outputDir,run=defaultR
   let info;try{info=JSON.parse(probe.stdout);}catch{throw new DirectorError('ffprobe returned invalid JSON',3);}
   const stream=info.streams?.find(s=>s.codec_type==='video');
   result.hasAudio=!!info.streams?.some(s=>s.codec_type==='audio');
+  // Optional metadata never changes requiredChecks or delivery readiness.
+  const measurement=(!result.hasAudio||measureAudioMetrics)
+    ? await measureAudio({videoPath:video,hasAudio:result.hasAudio,run})
+    : {status:'unverified',integratedLufs:null,truePeakDbtp:null,reason:'Optional measurement disabled'};
+  const {raw,...metrics}=measurement;
+  result.audioMetrics=metrics;
+  if(raw){
+    const path=await inside(base,join(dir,'audio-measurement.json'),{missing:true});
+    await writeJSON(base,path,{videoSha256:hash,stream:'0:a:0',metrics,raw});
+    result.audioMeasurement={path,sha256:await fileHash(path)};
+  }
   add('video_track',stream?'pass':'fail',stream?'Video stream found':'No video stream',[video]);
   add('audio_presence',expectation.audioRequired&&!result.hasAudio?'fail':'pass',result.hasAudio?'Audio stream found':'No audio stream',[video]);
   const decode=await run('ffmpeg',['-v','error','-xerror','-i',video,'-f','null','-']);
